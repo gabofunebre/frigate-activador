@@ -60,8 +60,8 @@ FUNCIONAMIENTO INTERNO
 LOGS PERSONALIZADOS
 ===================
 
-El activador registra eventos importantes en el archivo:
-  ./activador.log
+El activador registra eventos importantes en el archivo rotativo:
+  ./log.txt (tamaño máximo 3 MB)
 
 Ejemplos de entradas:
   - Inicio de Frigate

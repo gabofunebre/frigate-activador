@@ -2,9 +2,9 @@ from flask import Flask, send_from_directory, redirect, jsonify
 import subprocess
 import threading
 import time
-import json
-from datetime import datetime, timedelta
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
@@ -13,29 +13,42 @@ CONTAINER_NAME = "frigate"
 FRIGATE_URL = "http://frigate.gabo.ar"
 CHECK_INTERVAL = 60  # cada 1 min se evalúa la actividad
 INACTIVIDAD_MINUTOS = 10
-LOG_FILE = "activador.log"
+LOG_FILE = "log.txt"
 monitor_activo = False
+
+# Configurar registro de eventos con rotación
+logger = logging.getLogger("activador")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
+handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
+logger.addHandler(handler)
 
 
 def log_event(mensaje):
-    timestamp = datetime.now().isoformat()
-    with open(LOG_FILE, "a") as f:
-        f.write(f"[{timestamp}] {mensaje}\n")
+    logger.info(mensaje)
 
 
 def container_running(name=CONTAINER_NAME):
-    result = subprocess.run(
-        ["docker", "ps", "--filter", f"name={name}", "--format", "{{.Names}}"],
-        capture_output=True, text=True
-    )
-    return name in result.stdout.splitlines()
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "--filter", f"name={name}", "--format", "{{.Names}}"],
+            capture_output=True, text=True
+        )
+        return name in result.stdout.splitlines()
+    except FileNotFoundError:
+        log_event("Comando 'docker' no encontrado al verificar contenedores")
+        return False
 
 
 def start_frigate():
     global monitor_activo
     if not container_running():
         log_event("Iniciando contenedor Frigate")
-        subprocess.run(["docker", "start", CONTAINER_NAME], check=True)
+        try:
+            subprocess.run(["docker", "start", CONTAINER_NAME], check=True)
+        except FileNotFoundError:
+            log_event("Comando 'docker' no encontrado al intentar iniciar Frigate")
+            return
         if not monitor_activo:
             threading.Thread(target=monitor_usage, daemon=True).start()
             monitor_activo = True
@@ -44,7 +57,11 @@ def start_frigate():
 def stop_frigate():
     global monitor_activo
     log_event("Deteniendo contenedor Frigate por inactividad")
-    subprocess.run(["docker", "stop", CONTAINER_NAME], check=True)
+    try:
+        subprocess.run(["docker", "stop", CONTAINER_NAME], check=True)
+    except FileNotFoundError:
+        log_event("Comando 'docker' no encontrado al intentar detener Frigate")
+        return
     monitor_activo = False
 
 
@@ -55,28 +72,26 @@ def container_ready():
             "{{.State.Health.Status}}", CONTAINER_NAME
         ], text=True).strip()
         return output == "healthy"
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
 
 def usuario_activo_en_logs():
     try:
-        logs = subprocess.check_output(["docker", "logs", "--tail", "200", CONTAINER_NAME], text=True)
+        logs = subprocess.check_output([
+            "docker",
+            "logs",
+            "--since",
+            f"{INACTIVIDAD_MINUTOS}m",
+            CONTAINER_NAME,
+        ], text=True)
     except Exception as e:
         log_event(f"Error leyendo logs del contenedor: {e}")
         return False
 
-    umbral = datetime.utcnow() - timedelta(minutes=INACTIVIDAD_MINUTOS)
-
     for linea in reversed(logs.splitlines()):
         if "GET" in linea:
-            try:
-                timestamp_str = " ".join(linea.split()[0:2])
-                timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
-                if timestamp > umbral:
-                    return True
-            except Exception:
-                continue
+            return True
 
     return False
 
