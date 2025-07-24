@@ -2,8 +2,9 @@ from flask import Flask, send_from_directory, redirect, jsonify
 import subprocess
 import threading
 import time
-from datetime import datetime
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
@@ -12,14 +13,19 @@ CONTAINER_NAME = "frigate"
 FRIGATE_URL = "http://frigate.gabo.ar"
 CHECK_INTERVAL = 60  # cada 1 min se evalúa la actividad
 INACTIVIDAD_MINUTOS = 10
-LOG_FILE = "activador.log"
+LOG_FILE = "log.txt"
 monitor_activo = False
+
+# Configurar registro de eventos con rotación
+logger = logging.getLogger("activador")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
+handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
+logger.addHandler(handler)
 
 
 def log_event(mensaje):
-    timestamp = datetime.now().isoformat()
-    with open(LOG_FILE, "a") as f:
-        f.write(f"[{timestamp}] {mensaje}\n")
+    logger.info(mensaje)
 
 
 def container_running(name=CONTAINER_NAME):
