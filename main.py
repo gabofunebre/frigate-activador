@@ -15,6 +15,14 @@ CHECK_INTERVAL = 60  # cada 1 min se evalúa la actividad
 INACTIVIDAD_MINUTOS = 10
 LOG_FILE = "log.txt"
 monitor_activo = False
+inicio_monitor = 0.0
+
+# Configurar registro de eventos con rotación
+logger = logging.getLogger("activador")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
+handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
+logger.addHandler(handler)
 
 # Configurar registro de eventos con rotación
 logger = logging.getLogger("activador")
@@ -41,7 +49,7 @@ def container_running(name=CONTAINER_NAME):
 
 
 def start_frigate():
-    global monitor_activo
+    global monitor_activo, inicio_monitor
     if not container_running():
         log_event("Iniciando contenedor Frigate")
         try:
@@ -49,13 +57,14 @@ def start_frigate():
         except FileNotFoundError:
             log_event("Comando 'docker' no encontrado al intentar iniciar Frigate")
             return
+        inicio_monitor = time.time()
         if not monitor_activo:
             threading.Thread(target=monitor_usage, daemon=True).start()
             monitor_activo = True
 
 
 def stop_frigate():
-    global monitor_activo
+    global monitor_activo, inicio_monitor
     log_event("Deteniendo contenedor Frigate por inactividad")
     try:
         subprocess.run(["docker", "stop", CONTAINER_NAME], check=True)
@@ -63,6 +72,7 @@ def stop_frigate():
         log_event("Comando 'docker' no encontrado al intentar detener Frigate")
         return
     monitor_activo = False
+    inicio_monitor = 0.0
 
 
 def container_ready():
@@ -97,8 +107,13 @@ def usuario_activo_en_logs():
 
 
 def monitor_usage():
+    global inicio_monitor
     while container_running():
         time.sleep(CHECK_INTERVAL)
+
+        # Esperar al menos INACTIVIDAD_MINUTOS antes de evaluar la actividad
+        if time.time() - inicio_monitor < INACTIVIDAD_MINUTOS * 60:
+            continue
 
         if not container_ready():
             continue
