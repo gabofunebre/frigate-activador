@@ -15,6 +15,23 @@ UBICACIÓN DEL CÓDIGO:
   /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador/main.py
 
 --------------------------------------------------
+CONFIGURACIÓN INICIAL
+=====================
+
+1. Copia el archivo `frigate-activador.service` a `/etc/systemd/system/` y habilítalo:
+
+   ```bash
+   sudo cp frigate-activador.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable frigate-activador.service
+   sudo systemctl start frigate-activador.service
+   ```
+
+2. En Nginx (o Nginx Proxy Manager) crea un proxy que redirija `frigate.gabo.ar` al servicio en `http://127.0.0.1:5544`.
+
+3. Asegúrate de que el puerto 5544 esté accesible desde la máquina donde corre Nginx.
+
+--------------------------------------------------
 USO GENERAL
 ===========
 
