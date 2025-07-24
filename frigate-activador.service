@@ -1,0 +1,12 @@
+[Unit]
+Description=Servicio Flask activador de Frigate
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador
+ExecStart=/usr/bin/python3 main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
