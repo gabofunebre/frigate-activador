@@ -52,16 +52,17 @@ FUNCIONAMIENTO INTERNO
    - Mientras tanto, muestra la pantalla `loading.html`.
    - Cuando el contenedor está listo, redirige al usuario al sitio real.
 4. Luego inicia un proceso de monitoreo en segundo plano:
-   - Cada 1 minuto chequea los últimos logs del contenedor.
-   - Si no encuentra actividad (GETs) en los últimos 10 minutos, lo detiene automáticamente.
+  - Cada 1 minuto chequea los últimos logs del contenedor.
+  - Espera al menos 10 minutos desde el arranque antes de evaluar la actividad.
+  - Si no se detectan peticiones GET en ese período, detiene el contenedor automáticamente.
    - Finaliza el monitoreo (y no lo reinicia, salvo que se vuelva a acceder a `/`).
 
 --------------------------------------------------
 LOGS PERSONALIZADOS
 ===================
 
-El activador registra eventos importantes en el archivo:
-  ./activador.log
+El activador registra eventos importantes en el archivo rotativo:
+  ./log.txt (tamaño máximo 3 MB)
 
 Ejemplos de entradas:
   - Inicio de Frigate
