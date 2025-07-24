@@ -24,6 +24,13 @@ handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
 handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
 logger.addHandler(handler)
 
+# Configurar registro de eventos con rotación
+logger = logging.getLogger("activador")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
+handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
+logger.addHandler(handler)
+
 
 def log_event(mensaje):
     logger.info(mensaje)
