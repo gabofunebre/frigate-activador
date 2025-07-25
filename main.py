@@ -4,6 +4,7 @@ import threading
 import time
 import os
 import logging
+from datetime import timedelta
 from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
@@ -22,6 +23,9 @@ LOGIN_PASS = "gabo5248"
 app.secret_key = "9fda2798cf2ae321s1fdu888od9sddw68qa68d03f"
 monitor_activo = False
 inicio_monitor = 0.0
+SESSION_VERSION = 0
+_session_lock = threading.Lock()
+app.permanent_session_lifetime = timedelta(days=1)
 
 # Configurar registro de eventos con rotación
 logger = logging.getLogger("activador")
@@ -64,7 +68,7 @@ def start_frigate():
 
 
 def stop_frigate():
-    global monitor_activo, inicio_monitor
+    global monitor_activo, inicio_monitor, SESSION_VERSION
     log_event("Deteniendo contenedor Frigate por inactividad")
     try:
         subprocess.run(["docker", "stop", CONTAINER_NAME], check=True)
@@ -73,6 +77,8 @@ def stop_frigate():
         return
     monitor_activo = False
     inicio_monitor = 0.0
+    with _session_lock:
+        SESSION_VERSION += 1
 
 
 def container_ready():
@@ -107,7 +113,6 @@ def usuario_activo_en_logs():
 
 
 def monitor_usage():
-    global inicio_monitor
     while container_running():
         time.sleep(CHECK_INTERVAL)
 
@@ -130,10 +135,15 @@ def login():
         pw = request.form.get("password")
         if user == LOGIN_USER and pw == LOGIN_PASS:
             session["logged_in"] = True
+            with _session_lock:
+                session["version"] = SESSION_VERSION
+            session.permanent = True
             return redirect("/activar")
         return redirect("/?error=1")
 
-    if session.get("logged_in"):
+    if session.get("version") != SESSION_VERSION:
+        session.clear()
+    elif session.get("logged_in"):
         return redirect("/activar")
 
     return send_from_directory(".", "login.html")
@@ -141,6 +151,8 @@ def login():
 
 @app.route("/activar")
 def activar():
+    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
+        return redirect("/")
     def iniciar_y_esperar():
         try:
             log_event("Solicitud de activación recibida")
@@ -156,11 +168,15 @@ def activar():
 
 @app.route("/redirigir")
 def redirigir():
+    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
+        return redirect("/")
     return redirect(FRIGATE_URL, code=302)
 
 
 @app.route("/estado")
 def estado():
+    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
+        return jsonify({"ready": False, "error": "Sesión expirada"})
     ready = container_ready()
     error = None
     if os.path.exists(LOG_FILE):
