@@ -3,8 +3,11 @@ FRIGATE ACTIVADOR - DOCUMENTACIÓN Y USO
 
 Este servicio permite iniciar el contenedor Docker de Frigate bajo demanda 
 cuando un usuario accede al sitio, mostrando una pantalla de espera ("loading") 
-hasta que el contenedor esté listo (estado healthy). 
-Luego, redirige automáticamente al sitio real. 
+hasta que el contenedor esté listo (estado healthy).
+Luego, redirige automáticamente al sitio real.
+
+Al acceder a la raíz del servicio se presenta una pantalla de login. Solo se
+permite el ingreso con el usuario **taller** y la contraseña **gabo5248**.
 
 Además, monitorea la actividad del usuario en los logs: 
 si pasan más de 10 minutos sin actividad (peticiones GET), 
@@ -62,13 +65,14 @@ FUNCIONAMIENTO INTERNO
 ======================
 
 1. El usuario accede a `http://frigate.gabo.ar` (redirigido por Nginx Proxy Manager).
-2. Llega al servicio Flask del activador en el puerto 5544.
-3. El activador:
+2. Se muestra el formulario de login. Si las credenciales son válidas, se continúa.
+3. Llega al servicio Flask del activador en el puerto 5544.
+4. El activador:
    - Inicia el contenedor `frigate` (si no está corriendo).
    - Espera a que esté en estado `healthy` leyendo su estado con `docker inspect`.
    - Mientras tanto, muestra la pantalla `loading.html`.
    - Cuando el contenedor está listo, redirige al usuario al sitio real.
-4. Luego inicia un proceso de monitoreo en segundo plano:
+5. Luego inicia un proceso de monitoreo en segundo plano:
   - Cada 5 minutos chequea los últimos logs del contenedor.
   - Espera al menos 10 minutos desde el arranque antes de evaluar la actividad.
   - Si no se detectan peticiones GET en ese período, detiene el contenedor automáticamente.
