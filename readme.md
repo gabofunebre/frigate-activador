@@ -6,8 +6,7 @@ cuando un usuario accede al sitio, mostrando una pantalla de espera ("loading")
 hasta que el contenedor esté listo (estado healthy).
 Luego, redirige automáticamente al sitio real.
 
-Al acceder a la raíz del servicio se presenta una pantalla de login. Solo se
-permite el ingreso con el usuario **taller** y la contraseña **gabo5248**.
+Al acceder a la raíz del servicio se presenta una pantalla de login.
 
 Además, monitorea la actividad del usuario en los logs: 
 si pasan más de 10 minutos sin actividad (peticiones GET), 
