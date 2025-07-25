@@ -69,7 +69,7 @@ FUNCIONAMIENTO INTERNO
    - Mientras tanto, muestra la pantalla `loading.html`.
    - Cuando el contenedor está listo, redirige al usuario al sitio real.
 4. Luego inicia un proceso de monitoreo en segundo plano:
-  - Cada 1 minuto chequea los últimos logs del contenedor.
+  - Cada 5 minutos chequea los últimos logs del contenedor.
   - Espera al menos 10 minutos desde el arranque antes de evaluar la actividad.
   - Si no se detectan peticiones GET en ese período, detiene el contenedor automáticamente.
    - Finaliza el monitoreo (y no lo reinicia, salvo que se vuelva a acceder a `/`).
