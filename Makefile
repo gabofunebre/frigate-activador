@@ -54,6 +54,8 @@ fi
 	git commit -m "$(MSG)"
 	git push
 
-## Mostrar esta ayuda
+## Mostrar esta ayuda con descripciones
 help:
-	@grep -E '^[a-zA-Z_-]+:' Makefile | sed 's/^/ - /'
+	@awk '/^##/ {sub(/^## /, "", $$0); desc=$$0; getline; \
+	 if($$1 ~ /^[a-zA-Z_-]+:/){name=$$1; sub(/:/, "", name); \
+ printf "%-15s %s\n", name, desc}}' $(MAKEFILE_LIST)
