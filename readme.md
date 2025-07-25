@@ -59,6 +59,23 @@ USO GENERAL
   journalctl -u frigate-activador.service
 
 
+COMANDOS MAKE
+=============
+
+Para administrar el servicio de forma rapida se puede usar el Makefile incluido. Las tareas principales son:
+
+  make start       - inicia el servicio
+  make stop        - detiene el servicio
+  make restart     - reinicia el servicio
+  make status      - muestra el estado
+  make active      - indica si esta activo
+  make logs        - muestra los logs completos
+  make logsf       - sigue los logs en tiempo real
+  make logtxt      - tail del archivo log.txt
+  make logs-fri    - logs del contenedor Frigate
+  make logs-fri-f  - logs del contenedor Frigate en tiempo real
+  make push "mensaje" - add, commit y push
+  make help        - lista todas las tareas
 --------------------------------------------------
 FUNCIONAMIENTO INTERNO
 ======================
