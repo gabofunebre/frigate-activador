@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, redirect, jsonify
+from flask import Flask, send_from_directory, redirect, jsonify, request, session
 import subprocess
 import threading
 import time
@@ -14,6 +14,12 @@ FRIGATE_URL = "http://frigate.gabo.ar"
 CHECK_INTERVAL = 300  # cada 5 min se evalúa la actividad
 INACTIVIDAD_MINUTOS = 10
 LOG_FILE = "log.txt"
+
+# Credenciales de acceso
+LOGIN_USER = "taller"
+LOGIN_PASS = "gabo5248"
+
+app.secret_key = os.environ.get("SECRET_KEY", "cambie_esto")
 monitor_activo = False
 inicio_monitor = 0.0
 
@@ -117,7 +123,23 @@ def monitor_usage():
             break
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user = request.form.get("username")
+        pw = request.form.get("password")
+        if user == LOGIN_USER and pw == LOGIN_PASS:
+            session["logged_in"] = True
+            return redirect("/activar")
+        return redirect("/?error=1")
+
+    if session.get("logged_in"):
+        return redirect("/activar")
+
+    return send_from_directory(".", "login.html")
+
+
+@app.route("/activar")
 def activar():
     def iniciar_y_esperar():
         try:
