@@ -19,7 +19,7 @@ LOG_FILE = "log.txt"
 LOGIN_USER = "taller"
 LOGIN_PASS = "gabo5248"
 
-app.secret_key = os.environ.get("SECRET_KEY", "cambie_esto")
+app.secret_key = "9fda2798cf2ae321s1fdu888od9sddw68qa68d03f"
 monitor_activo = False
 inicio_monitor = 0.0
 
