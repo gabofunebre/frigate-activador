@@ -1,57 +1,8 @@
-log
-[2025-07-24 21:59:32,928] Solicitud de activación recibida
-[2025-07-24 21:59:32,928] Solicitud de activación recibida
-[2025-07-24 21:59:33,000] Iniciando contenedor Frigate
-[2025-07-24 21:59:33,000] Iniciando contenedor Frigate
-[2025-07-24 22:14:36,711] Deteniendo contenedor Frigate por inactividad
-[2025-07-24 22:14:36,711] Deteniendo contenedor Frigate por inactividad
-[2025-07-24 22:35:38,256] Solicitud de activación recibida
-[2025-07-24 22:35:38,256] Solicitud de activación recibida
-[2025-07-24 22:35:38,402] Iniciando contenedor Frigate
-[2025-07-24 22:35:38,402] Iniciando contenedor Frigate
-[2025-07-24 22:57:03,698] Solicitud de activación recibida
-[2025-07-24 22:57:03,698] Solicitud de activación recibida
-[2025-07-24 22:58:37,117] Solicitud de activación recibida
-[2025-07-24 22:58:37,117] Solicitud de activación recibida
-[2025-07-24 23:09:51,731] Deteniendo contenedor Frigate por inactividad
-[2025-07-24 23:09:51,731] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:02:18,969] Solicitud de activación recibida
-[2025-07-25 00:02:18,969] Solicitud de activación recibida
-[2025-07-25 00:02:19,055] Iniciando contenedor Frigate
-[2025-07-25 00:02:19,055] Iniciando contenedor Frigate
-[2025-07-25 00:02:19,142] Solicitud de activación recibida
-[2025-07-25 00:02:19,142] Solicitud de activación recibida
-[2025-07-25 00:02:19,240] Iniciando contenedor Frigate
-[2025-07-25 00:02:19,240] Iniciando contenedor Frigate
-[2025-07-25 00:02:19,662] Solicitud de activación recibida
-[2025-07-25 00:02:19,662] Solicitud de activación recibida
-[2025-07-25 00:02:19,765] Iniciando contenedor Frigate
-[2025-07-25 00:02:19,765] Iniciando contenedor Frigate
-[2025-07-25 00:13:22,275] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:13:22,275] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:13:22,476] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:13:22,476] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:17:40,004] Solicitud de activación recibida
-[2025-07-25 00:17:40,004] Solicitud de activación recibida
-[2025-07-25 00:17:40,056] Iniciando contenedor Frigate
-[2025-07-25 00:17:40,056] Iniciando contenedor Frigate
-[2025-07-25 00:33:45,278] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:33:45,278] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 00:56:34,677] Solicitud de activación recibida
-[2025-07-25 00:56:34,677] Solicitud de activación recibida
-[2025-07-25 00:56:34,764] Iniciando contenedor Frigate
-[2025-07-25 00:56:34,764] Iniciando contenedor Frigate
-[2025-07-25 01:07:37,009] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 01:07:37,009] Deteniendo contenedor Frigate por inactividad
-[2025-07-25 01:15:45,514] Solicitud de activación recibida
-[2025-07-25 01:15:45,514] Solicitud de activación recibida
-[2025-07-25 01:15:45,564] Iniciando contenedor Frigate
-[2025-07-25 01:15:45,564] Iniciando contenedor Frigate
-[2025-07-25 01:53:26,800] Solicitud de activación recibida
-[2025-07-25 01:53:26,800] Solicitud de activación recibida
-[2025-07-25 01:53:26,851] Iniciando contenedor Frigate
-[2025-07-25 01:53:26,851] Iniciando contenedor Frigate
-[2025-07-25 01:54:08,108] Solicitud de activación recibida
-[2025-07-25 01:55:17,232] Solicitud de activación recibida
-[2025-07-25 02:07:22,049] Solicitud de activación recibida
-[2025-07-25 02:07:52,682] Solicitud de activación recibida
+[2025-07-26 13:39:50,384] Solicitud de activación recibida
+[2025-07-26 13:39:50,482] Iniciando contenedor Frigate
+[2025-07-26 13:42:09,213] Solicitud de activación recibida
+[2025-07-26 13:42:10,223] Solicitud de activación recibida
+[2025-07-26 13:42:27,616] Solicitud de activación recibida
+[2025-07-26 13:42:40,772] Solicitud de activación recibida
+[2025-07-26 13:42:41,668] Solicitud de activación recibida
+[2025-07-26 18:47:07,304] Solicitud de activación recibida

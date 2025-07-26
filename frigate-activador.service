@@ -7,6 +7,10 @@ Requires=docker.service
 WorkingDirectory=/srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador
 ExecStart=/usr/bin/python3 main.py
 Restart=always
+RestartSec=5
+User=gabofunebre
+Group=gabofunebre
+Environment="PYTHONUNBUFFERED=1"
 
 [Install]
 WantedBy=multi-user.target

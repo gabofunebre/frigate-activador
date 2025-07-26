@@ -1,191 +1,58 @@
-from flask import Flask, send_from_directory, redirect, jsonify, request, session
-import subprocess
-import threading
-import time
-import os
-import logging
+# main.py
+from flask import Flask
+from rutas import registrar_rutas
+from funciones import (
+    load_session_version,
+    save_session_version,
+    iniciar_monitor_inactividad,
+    configurar_logging,
+    SESSION_VERSION
+)
 from datetime import timedelta
-from logging.handlers import RotatingFileHandler
 
-app = Flask(__name__)
-
-# Configuración
+# -------------------------------
+# Configuración general
+# -------------------------------
 CONTAINER_NAME = "frigate"
 FRIGATE_URL = "http://frigate.gabo.ar"
-CHECK_INTERVAL = 300  # cada 5 min se evalúa la actividad
-INACTIVIDAD_MINUTOS = 10
+CHECK_INTERVAL = 300           # Intervalo para revisar actividad (segundos)
+INACTIVIDAD_MINUTOS = 10       # Tiempo sin actividad para apagar el contenedor
 LOG_FILE = "log.txt"
+SESSION_FILE = "session_version.txt"
+ACTIVITY_FLAG = "GET /api"     # Patrón para detectar actividad en logs
 
-# Credenciales de acceso
 LOGIN_USER = "taller"
 LOGIN_PASS = "gabo5248"
 
+# -------------------------------
+# Inicialización
+# -------------------------------
+app = Flask(__name__)
 app.secret_key = "9fda2798cf2ae321s1fdu888od9sddw68qa68d03f"
-monitor_activo = False
-inicio_monitor = 0.0
-SESSION_VERSION = 0
-_session_lock = threading.Lock()
-app.permanent_session_lifetime = timedelta(days=1)
+app.permanent_session_lifetime = timedelta(hours=3)
 
-# Configurar registro de eventos con rotación
-logger = logging.getLogger("activador")
-logger.setLevel(logging.INFO)
-handler = RotatingFileHandler(LOG_FILE, maxBytes=3 * 1024 * 1024, backupCount=1)
-handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s'))
-logger.addHandler(handler)
+configurar_logging(LOG_FILE)
+load_session_version(SESSION_FILE)
+iniciar_monitor_inactividad(
+    container_name=CONTAINER_NAME,
+    check_interval=CHECK_INTERVAL,
+    inactividad_minutos=INACTIVIDAD_MINUTOS,
+    activity_flag=ACTIVITY_FLAG,
+    session_file=SESSION_FILE,
+)
 
-
-
-def log_event(mensaje):
-    logger.info(mensaje)
-
-
-def container_running(name=CONTAINER_NAME):
-    try:
-        result = subprocess.run(
-            ["docker", "ps", "--filter", f"name={name}", "--format", "{{.Names}}"],
-            capture_output=True, text=True
-        )
-        return name in result.stdout.splitlines()
-    except FileNotFoundError:
-        log_event("Comando 'docker' no encontrado al verificar contenedores")
-        return False
-
-
-def start_frigate():
-    global monitor_activo, inicio_monitor
-    if not container_running():
-        log_event("Iniciando contenedor Frigate")
-        try:
-            subprocess.run(["docker", "start", CONTAINER_NAME], check=True)
-        except FileNotFoundError:
-            log_event("Comando 'docker' no encontrado al intentar iniciar Frigate")
-            return
-        inicio_monitor = time.time()
-        if not monitor_activo:
-            threading.Thread(target=monitor_usage, daemon=True).start()
-            monitor_activo = True
-
-
-def stop_frigate():
-    global monitor_activo, inicio_monitor, SESSION_VERSION
-    log_event("Deteniendo contenedor Frigate por inactividad")
-    try:
-        subprocess.run(["docker", "stop", CONTAINER_NAME], check=True)
-    except FileNotFoundError:
-        log_event("Comando 'docker' no encontrado al intentar detener Frigate")
-        return
-    monitor_activo = False
-    inicio_monitor = 0.0
-    with _session_lock:
-        SESSION_VERSION += 1
-
-
-def container_ready():
-    try:
-        output = subprocess.check_output([
-            "docker", "inspect", "--format",
-            "{{.State.Health.Status}}", CONTAINER_NAME
-        ], text=True).strip()
-        return output == "healthy"
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
-
-
-def usuario_activo_en_logs():
-    try:
-        logs = subprocess.check_output([
-            "docker",
-            "logs",
-            "--since",
-            f"{INACTIVIDAD_MINUTOS}m",
-            CONTAINER_NAME,
-        ], text=True)
-    except Exception as e:
-        log_event(f"Error leyendo logs del contenedor: {e}")
-        return False
-
-    for linea in reversed(logs.splitlines()):
-        if "GET" in linea:
-            return True
-
-    return False
-
-
-def monitor_usage():
-    while container_running():
-        time.sleep(CHECK_INTERVAL)
-
-        # Esperar al menos INACTIVIDAD_MINUTOS antes de evaluar la actividad
-        if time.time() - inicio_monitor < INACTIVIDAD_MINUTOS * 60:
-            continue
-
-        if not container_ready():
-            continue
-
-        if not usuario_activo_en_logs():
-            stop_frigate()
-            break
-
-
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        user = request.form.get("username")
-        pw = request.form.get("password")
-        if user == LOGIN_USER and pw == LOGIN_PASS:
-            session["logged_in"] = True
-            with _session_lock:
-                session["version"] = SESSION_VERSION
-            session.permanent = True
-            return redirect("/activar")
-        return redirect("/?error=1")
-
-    if session.get("version") != SESSION_VERSION:
-        session.clear()
-    elif session.get("logged_in"):
-        return redirect("/activar")
-
-    return send_from_directory(".", "login.html")
-
-
-@app.route("/activar")
-def activar():
-    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
-        return redirect("/")
-    def iniciar_y_esperar():
-        try:
-            log_event("Solicitud de activación recibida")
-            start_frigate()
-            while not container_ready():
-                time.sleep(1)
-        except Exception as e:
-            log_event(f"Error al iniciar Frigate: {e}")
-
-    threading.Thread(target=iniciar_y_esperar).start()
-    return send_from_directory(".", "loading.html")
-
-
-@app.route("/redirigir")
-def redirigir():
-    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
-        return redirect("/")
-    return redirect(FRIGATE_URL, code=302)
-
-
-@app.route("/estado")
-def estado():
-    if not session.get("logged_in") or session.get("version") != SESSION_VERSION:
-        return jsonify({"ready": False, "error": "Sesión expirada"})
-    ready = container_ready()
-    error = None
-    if os.path.exists(LOG_FILE):
-        with open(LOG_FILE) as f:
-            lineas = f.readlines()
-            ultimos = [l for l in reversed(lineas) if "Error" in l]
-            error = ultimos[0].strip() if ultimos else None
-    return jsonify({"ready": ready, "error": error})
-
+# -------------------------------
+# Registro de rutas y arranque
+# -------------------------------
+registrar_rutas(
+    app,
+    container_name=CONTAINER_NAME,
+    frigate_url=FRIGATE_URL,
+    login_user=LOGIN_USER,
+    login_pass=LOGIN_PASS,
+    session_file=SESSION_FILE,
+    log_file=LOG_FILE
+)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5544)
