@@ -1,27 +1,26 @@
-FRIGATE ACTIVADOR - DOCUMENTACIÓN Y USO
-========================================
+# FRIGATE ACTIVADOR - DOCUMENTACIÓN Y USO
 
-Este servicio permite iniciar el contenedor Docker de Frigate bajo demanda 
-cuando un usuario accede al sitio, mostrando una pantalla de espera ("loading") 
-hasta que el contenedor esté listo (estado healthy).
-Luego, redirige automáticamente al sitio real.
+Este servicio permite iniciar el contenedor Docker de Frigate **bajo demanda** cuando un usuario accede al sitio. Muestra una pantalla de espera (`loading.html`) hasta que el contenedor esté listo (`healthy`), y luego redirige automáticamente al sitio real.
 
-Al acceder a la raíz del servicio se presenta una pantalla de login.
+También:
 
-Además, monitorea la actividad del usuario en los logs: 
-si pasan más de 10 minutos sin actividad (peticiones GET), 
-el servicio detiene el contenedor de Frigate para ahorrar recursos.
+- Presenta una pantalla de login al acceder a `/`
+- Monitorea la actividad del usuario en los logs del contenedor
+- Si pasan más de 10 minutos sin peticiones `GET`, apaga automáticamente el contenedor para ahorrar recursos
 
---------------------------------------------------
-UBICACIÓN DEL CÓDIGO:
-  /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador/main.py
+---
 
---------------------------------------------------
-CONFIGURACIÓN INICIAL
-=====================
+### 📁 UBICACIÓN DEL CÓDIGO
 
-1. Copia el archivo `frigate-activador.service` a `/etc/systemd/system/` y habilítalo:
+```
+/srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador/
+```
 
+---
+
+### ⚙️ CONFIGURACIÓN INICIAL
+
+1. Copiar y activar el servicio systemd:
    ```bash
    sudo cp frigate-activador.service /etc/systemd/system/
    sudo systemctl daemon-reload
@@ -29,90 +28,105 @@ CONFIGURACIÓN INICIAL
    sudo systemctl start frigate-activador.service
    ```
 
-2. En Nginx (o Nginx Proxy Manager) crea un proxy que redirija `frigate.gabo.ar` al servicio en `http://127.0.0.1:5544`.
+2. En Nginx (o Nginx Proxy Manager), crear un proxy que redirija `frigate.gabo.ar` a `http://127.0.0.1:5544`.
 
-3. Asegúrate de que el puerto 5544 esté accesible desde la máquina donde corre Nginx.
+3. Asegurarse de que el puerto `5544` esté accesible desde donde corre Nginx.
 
---------------------------------------------------
-USO GENERAL
-===========
+---
 
-▶️ Iniciar el servicio manualmente:
+### ▶️ USO GENERAL
+
+- Iniciar:
+  ```bash
   sudo systemctl start frigate-activador.service
+  ```
 
-⏹️ Detener el servicio manualmente:
+- Detener:
+  ```bash
   sudo systemctl stop frigate-activador.service
+  ```
 
-🔁 Reiniciar el servicio:
+- Reiniciar:
+  ```bash
   sudo systemctl restart frigate-activador.service
+  ```
 
-🔎 Ver estado actual del servicio:
+- Ver estado:
+  ```bash
   systemctl status frigate-activador.service
+  ```
 
-✅ Ver si el servicio está activo (simple):
+- Ver si está activo (sólo texto):
+  ```bash
   systemctl is-active frigate-activador.service
+  ```
 
-📋 Ver logs en tiempo real (salida por consola):
+- Ver logs en tiempo real:
+  ```bash
   journalctl -u frigate-activador.service -f
+  ```
 
-📅 Ver logs completos:
+- Ver logs completos:
+  ```bash
   journalctl -u frigate-activador.service
+  ```
 
+---
 
-COMANDOS MAKE
-=============
+### 🛠 COMANDOS MAKE
 
-Para administrar el servicio de forma rapida se puede usar el Makefile incluido. Las tareas principales son:
+Usá el `Makefile` incluido para facilitar la administración:
 
-  make start       - inicia el servicio
-  make stop        - detiene el servicio
-  make restart     - reinicia el servicio
-  make status      - muestra el estado
-  make active      - indica si esta activo
-  make logs        - muestra los logs completos
-  make logsf       - sigue los logs en tiempo real
-  make logtxt      - tail del archivo log.txt
-  make logs-fri    - logs del contenedor Frigate
-  make logs-fri-f  - logs del contenedor Frigate en tiempo real
-  make push "mensaje" - add, commit y push
-  make help        - lista todas las tareas
---------------------------------------------------
-FUNCIONAMIENTO INTERNO
-======================
+```bash
+make start         # Inicia el servicio
+make stop          # Detiene el servicio
+make restart       # Reinicia el servicio
+make status        # Estado detallado
+make active        # Solo muestra si está activo
+make logs          # Logs completos del servicio
+make logsf         # Logs en tiempo real
+make logtxt        # Tail del archivo log.txt
+make logs-fri      # Logs del contenedor Frigate
+make logs-fri-f    # Logs en tiempo real de Frigate
+make push "msg"    # Git add + commit + push
+make help          # Lista de comandos disponibles
+```
 
-1. El usuario accede a `http://frigate.gabo.ar` (redirigido por Nginx Proxy Manager).
-2. Se muestra el formulario de login. Si las credenciales son válidas, se continúa.
-3. Llega al servicio Flask del activador en el puerto 5544.
-4. El activador:
-   - Inicia el contenedor `frigate` (si no está corriendo).
-   - Espera a que esté en estado `healthy` leyendo su estado con `docker inspect`.
-   - Mientras tanto, muestra la pantalla `loading.html`.
-   - Cuando el contenedor está listo, redirige al usuario al sitio real.
-5. Luego inicia un proceso de monitoreo en segundo plano:
-  - Cada 5 minutos chequea los últimos logs del contenedor.
-  - Espera al menos 10 minutos desde el arranque antes de evaluar la actividad.
-  - Si no se detectan peticiones GET en ese período, detiene el contenedor automáticamente.
-   - Finaliza el monitoreo (y no lo reinicia, salvo que se vuelva a acceder a `/`).
+---
 
---------------------------------------------------
-LOGS PERSONALIZADOS
-===================
+### 🔄 FUNCIONAMIENTO INTERNO
 
-El activador registra eventos importantes en el archivo rotativo:
-  ./log.txt (tamaño máximo 3 MB)
+1. El usuario accede a `http://frigate.gabo.ar` (proxy vía Nginx).
+2. Se muestra el login. Si las credenciales son válidas:
+3. Se inicia el contenedor `frigate` si no estaba corriendo.
+4. Se muestra `loading.html` mientras se espera que el contenedor esté `healthy`.
+5. Una vez listo, el usuario es redirigido automáticamente al sitio real.
+6. Paralelamente, un monitor de inactividad se lanza:
+   - Cada 5 minutos revisa los logs recientes.
+   - Espera al menos 10 minutos desde que se inició.
+   - Si no detecta `GET /api` en los logs → apaga el contenedor.
+   - Todas las sesiones se invalidan automáticamente.
 
-Ejemplos de entradas:
-  - Inicio de Frigate
-  - Detención por inactividad
-  - Errores al iniciar o acceder al contenedor
-  - Lectura de logs fallida
+---
 
---------------------------------------------------
+### 📝 LOGS PERSONALIZADOS
 
-IMPORTANTE:
-  - Si el contenedor `frigate` se inicia por fuera del activador, 
-    **este servicio podría detenerlo** si no detecta usuarios activos.
-  - Para que el servicio monitoree correctamente, 
-    **es necesario que el contenedor se inicie desde el activador (/)**.
+El activador genera su propio archivo rotativo:
+```
+./log.txt
+```
 
---------------------------------------------------
+Registra:
+
+- Inicio y apagado del contenedor
+- Errores al interactuar con Docker
+- Fallos de login (con IP)
+- Excepciones detectadas
+
+---
+
+### ⚠️ IMPORTANTE
+
+- Si el contenedor `frigate` se inicia **por fuera** del activador, el servicio puede apagarlo por inactividad.
+- Para un uso correcto, los accesos deben ser iniciados **desde `/`**.
+- No uses el servidor Flask en producción directamente. El servicio systemd está preparado para usar Gunicorn.
