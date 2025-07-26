@@ -19,17 +19,17 @@ restart:
 status:
 	systemctl status $(SERVICE)
 
-## Comprobar si el servicio esta activo
+## Comprobar si el servicio está activo (sólo imprime 'active' o 'inactive')
 active:
 	systemctl is-active $(SERVICE)
 
 ## Mostrar logs completos del servicio
 logs:
-	journalctl -u $(SERVICE)
+	sudo journalctl -u $(SERVICE)
 
 ## Seguir logs en tiempo real del servicio
 logsf:
-	journalctl -u $(SERVICE) -f
+	sudo journalctl -u $(SERVICE) -f
 
 ## Seguir el archivo log.txt generado por el activador
 logtxt:
@@ -47,9 +47,9 @@ logs-fri-f:
 push:
 	@$(eval MSG := $(filter-out $@,$(MAKECMDGOALS)))
 	@if [ -z "$(MSG)" ]; then \
-echo 'Uso: make push "mensaje de commit"'; \
-exit 1; \
-fi
+		echo 'Uso: make push "mensaje de commit"'; \
+		exit 1; \
+	fi
 	git add .
 	git commit -m "$(MSG)"
 	git push
@@ -58,4 +58,4 @@ fi
 help:
 	@awk '/^##/ {sub(/^## /, "", $$0); desc=$$0; getline; \
 	 if($$1 ~ /^[a-zA-Z_-]+:/){name=$$1; sub(/:/, "", name); \
- printf "%-15s %s\n", name, desc}}' $(MAKEFILE_LIST)
+ printf "\033[36m%-15s\033[0m %s\n", name, desc}}' $(MAKEFILE_LIST)

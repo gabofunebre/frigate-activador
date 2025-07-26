@@ -1,11 +1,18 @@
 [Unit]
-Description=Servicio Flask activador de Frigate
+Description=Servicio Gunicorn activador de Frigate
 After=network.target docker.service
 Requires=docker.service
 
 [Service]
+# Ruta al directorio de tu app
 WorkingDirectory=/srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/CamarasTa/frigate-activador
-ExecStart=/usr/bin/python3 main.py
+
+# Opción A: usando entorno virtual (venv)
+# ExecStart=/srv/dev-disk-by-uuid-.../frigate-activador/venv/bin/gunicorn -w 2 -b 0.0.0.0:5544 main:app
+
+# Opción B: usando gunicorn instalado vía apt
+ExecStart=/usr/bin/gunicorn -w 2 -b 0.0.0.0:5544 main:app
+
 Restart=always
 RestartSec=5
 User=gabofunebre
