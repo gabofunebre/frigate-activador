@@ -6,3 +6,100 @@
 [2025-07-26 13:42:40,772] Solicitud de activación recibida
 [2025-07-26 13:42:41,668] Solicitud de activación recibida
 [2025-07-26 18:47:07,304] Solicitud de activación recibida
+[2025-07-26 19:11:17,550] Solicitud de activación recibida
+[2025-07-26 19:11:17,601] Iniciando contenedor Frigate
+[2025-07-26 19:15:01,172] Solicitud de activación recibida
+[2025-07-26 19:15:02,124] Solicitud de activación recibida
+[2025-07-26 19:19:23,240] Solicitud de activación recibida
+[2025-07-26 19:19:23,857] Solicitud de activación recibida
+[2025-07-26 19:52:08,289] Solicitud de activación recibida
+[2025-07-26 19:54:28,328] Solicitud de activación recibida
+[2025-07-26 19:54:28,400] Monitor ya activo, no se relanza
+[2025-07-26 19:54:29,010] Solicitud de activación recibida
+[2025-07-26 19:54:29,066] Monitor ya activo, no se relanza
+[2025-07-26 20:09:27,164] Deteniendo contenedor Frigate por inactividad
+[2025-07-27 11:55:19,634] Solicitud de activación recibida
+[2025-07-27 11:55:19,728] Iniciando contenedor Frigate
+[2025-07-27 11:55:20,610] Iniciando hilo de monitoreo de inactividad
+[2025-07-27 12:10:21,805] Deteniendo contenedor Frigate por inactividad
+[2025-07-27 13:35:51,186] Solicitud de activación recibida
+[2025-07-27 13:35:51,233] Iniciando contenedor Frigate
+[2025-07-27 13:35:51,696] Iniciando hilo de monitoreo de inactividad
+[2025-07-27 13:37:33,309] Solicitud de activación recibida
+[2025-07-27 13:37:33,358] Monitor ya activo, no se relanza
+[2025-07-27 13:50:52,191] Deteniendo contenedor Frigate por inactividad
+[2025-07-27 17:00:00,186] Solicitud de activación recibida
+[2025-07-27 17:00:00,276] Iniciando contenedor Frigate
+[2025-07-27 17:00:01,141] Iniciando hilo de monitoreo de inactividad
+[2025-07-27 17:00:38,704] Solicitud de activación recibida
+[2025-07-27 17:00:38,800] Monitor ya activo, no se relanza
+[2025-07-27 17:15:02,212] Deteniendo contenedor Frigate por inactividad
+[2025-07-27 18:43:31,885] Solicitud de activación recibida
+[2025-07-27 18:43:31,975] Iniciando contenedor Frigate
+[2025-07-27 18:43:32,877] Iniciando hilo de monitoreo de inactividad
+[2025-07-27 18:43:34,308] Solicitud de activación recibida
+[2025-07-27 18:43:34,361] Monitor ya activo, no se relanza
+[2025-07-27 18:43:42,553] Solicitud de activación recibida
+[2025-07-27 18:43:42,600] Monitor ya activo, no se relanza
+[2025-07-27 18:58:33,553] Deteniendo contenedor Frigate por inactividad
+[2025-07-28 08:15:57,266] Solicitud de activación recibida
+[2025-07-28 08:15:57,322] Iniciando contenedor Frigate
+[2025-07-28 08:15:57,386] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-28 08:16:52,169] Solicitud de activación recibida
+[2025-07-28 08:16:52,210] Iniciando contenedor Frigate
+[2025-07-28 08:16:52,254] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-28 08:17:02,230] Solicitud de activación recibida
+[2025-07-28 08:17:02,331] Iniciando contenedor Frigate
+[2025-07-28 08:17:02,404] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 14:41:07,558] Solicitud de activación recibida
+[2025-07-29 14:41:08,382] Iniciando contenedor Frigate
+[2025-07-29 14:41:08,480] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 14:42:17,293] Solicitud de activación recibida
+[2025-07-29 14:42:17,336] Iniciando contenedor Frigate
+[2025-07-29 14:42:17,373] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 14:43:21,805] Solicitud de activación recibida
+[2025-07-29 14:43:21,841] Iniciando contenedor Frigate
+[2025-07-29 14:43:21,878] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 15:20:53,082] Solicitud de activación recibida
+[2025-07-29 15:20:53,125] Iniciando contenedor Frigate
+[2025-07-29 15:20:53,163] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 15:21:20,296] Solicitud de activación recibida
+[2025-07-29 15:21:20,336] Iniciando contenedor Frigate
+[2025-07-29 15:21:20,374] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 19:02:58,471] Solicitud de activación recibida
+[2025-07-29 19:02:58,548] Iniciando contenedor Frigate
+[2025-07-29 19:02:58,615] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 19:38:34,106] Solicitud de activación recibida
+[2025-07-29 19:38:34,208] Iniciando contenedor Frigate
+[2025-07-29 19:38:34,255] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 21:59:57,626] Solicitud de activación recibida
+[2025-07-29 21:59:57,722] Iniciando contenedor Frigate
+[2025-07-29 21:59:57,807] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-29 22:00:23,592] Solicitud de activación recibida
+[2025-07-29 22:00:23,670] Iniciando contenedor Frigate
+[2025-07-29 22:00:23,737] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-30 16:45:10,151] Solicitud de activación recibida
+[2025-07-30 16:45:10,205] Iniciando contenedor Frigate
+[2025-07-30 16:45:10,245] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-30 16:46:25,401] Solicitud de activación recibida
+[2025-07-30 16:46:25,444] Iniciando contenedor Frigate
+[2025-07-30 16:46:25,480] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-30 16:46:57,321] Solicitud de activación recibida
+[2025-07-30 16:46:57,482] Iniciando contenedor Frigate
+[2025-07-30 16:46:57,597] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-30 16:47:33,582] Solicitud de activación recibida
+[2025-07-30 16:47:33,678] Iniciando contenedor Frigate
+[2025-07-30 16:47:33,720] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-07-30 16:47:53,512] Solicitud de activación recibida
+[2025-07-30 16:47:53,553] Iniciando contenedor Frigate
+[2025-07-30 16:47:53,589] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-08-06 16:47:38,337] Solicitud de activación recibida
+[2025-08-06 16:47:38,631] Iniciando contenedor Frigate
+[2025-08-06 16:47:38,684] Error al iniciar Frigate: Command '['docker', 'start', 'frigate']' returned non-zero exit status 1.
+[2025-08-06 16:48:55,166] Solicitud de activación recibida
+[2025-08-06 16:48:55,235] Iniciando hilo de monitoreo de inactividad
+[2025-08-06 16:51:46,585] Solicitud de activación recibida
+[2025-08-06 16:51:46,679] Iniciando contenedor Frigate
+[2025-08-06 16:51:47,574] Monitor ya activo, no se relanza
+[2025-08-06 16:51:52,230] Solicitud de activación recibida
+[2025-08-06 16:51:52,319] Monitor ya activo, no se relanza

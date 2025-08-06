@@ -79,14 +79,28 @@ def start_frigate(container_name):
         except FileNotFoundError:
             log_event("Comando 'docker' no encontrado al intentar iniciar Frigate")
             return
+
     inicio_monitor = time.time()
     if not monitor_activo:
+        log_event("Iniciando hilo de monitoreo de inactividad")
         threading.Thread(
             target=monitor_usage,
-            args=(container_name, ),
-            daemon=True
+            args=(container_name,),
+            daemon=True,
+            name="monitor_usage"
         ).start()
         monitor_activo = True
+    elif not any(t.name == "monitor_usage" for t in threading.enumerate()):
+        log_event("Hilo de monitoreo ausente, relanzando")
+        threading.Thread(
+            target=monitor_usage,
+            args=(container_name,),
+            daemon=True,
+            name="monitor_usage"
+        ).start()
+        monitor_activo = True
+    else:
+        log_event("Monitor ya activo, no se relanza")
 
 def stop_frigate(container_name, session_file):
     global monitor_activo, inicio_monitor, SESSION_VERSION
@@ -141,6 +155,7 @@ def iniciar_monitor_inactividad(container_name, check_interval, inactividad_minu
         threading.Thread(
             target=monitor_usage,
             args=(container_name,),
-            daemon=True
+            daemon=True,
+            name="monitor_usage"
         ).start()
         monitor_activo = True
