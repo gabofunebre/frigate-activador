@@ -58,14 +58,28 @@ def container_running(container_name):
         return False
 
 def container_ready(container_name):
+    """Devuelve True si el contenedor está listo para usarse.
+
+    En primer lugar se intenta obtener el estado de salud del contenedor. Si
+    no existe un healthcheck definido o el comando falla por cualquier motivo,
+    se considera como listo siempre y cuando el contenedor esté en ejecución.
+    """
     try:
         output = subprocess.check_output([
             "docker", "inspect", "--format",
             "{{.State.Health.Status}}", container_name
         ], text=True).strip()
-        return output == "healthy"
-    except:
-        return False
+        if output == "healthy":
+            return True
+    except FileNotFoundError:
+        log_event("Comando 'docker' no encontrado al verificar estado")
+    except subprocess.CalledProcessError:
+        pass
+    except Exception as e:
+        log_event(f"Error verificando estado del contenedor: {e}")
+
+    # Como fallback, consideramos listo si simplemente está corriendo
+    return container_running(container_name)
 
 def start_frigate(container_name):
     global monitor_activo, inicio_monitor
@@ -74,8 +88,12 @@ def start_frigate(container_name):
         try:
             subprocess.run(["docker", "start", container_name], check=True)
         except subprocess.CalledProcessError as e:
-            log_event(f"Error al iniciar Frigate: {e}")
-            return
+            log_event(f"Fallo al iniciar con 'docker start': {e}. Ejecutando 'docker compose up -d'")
+            try:
+                subprocess.run(["docker", "compose", "up", "-d", container_name], check=True)
+            except Exception as e2:
+                log_event(f"Error al iniciar Frigate con docker compose: {e2}")
+                return
         except FileNotFoundError:
             log_event("Comando 'docker' no encontrado al intentar iniciar Frigate")
             return

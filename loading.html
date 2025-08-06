@@ -53,13 +53,19 @@
 
         if (data.ready) {
           window.location.href = "/redirigir";
-        } else if (data.error) {
+          return;
+        }
+
+        if (data.error) {
           document.querySelector(".error").textContent = data.error;
         } else {
-          setTimeout(chequearEstado, 2000);
+          document.querySelector(".error").textContent = "";
         }
+
+        setTimeout(chequearEstado, 2000);
       } catch (e) {
         document.querySelector(".error").textContent = "Error al consultar el estado del servicio.";
+        setTimeout(chequearEstado, 2000);
       }
     }
 
