@@ -69,14 +69,16 @@ def container_ready(container_name):
             "docker", "inspect", "--format",
             "{{.State.Health.Status}}", container_name
         ], text=True).strip()
-        if output == "healthy":
-            return True
+        if output and output != "<no value>":
+            return output == "healthy"
     except FileNotFoundError:
         log_event("Comando 'docker' no encontrado al verificar estado")
+        return False
     except subprocess.CalledProcessError:
         pass
     except Exception as e:
         log_event(f"Error verificando estado del contenedor: {e}")
+        return False
 
     # Como fallback, consideramos listo si simplemente está corriendo
     return container_running(container_name)
